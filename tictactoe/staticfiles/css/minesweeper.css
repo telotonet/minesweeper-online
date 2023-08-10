@@ -1,0 +1,18 @@
+.cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: gray; /* Цвет неоткрытых клеток */
+}
+
+.cell.hidden {
+    background-color: gray; /* Тот же цвет для неоткрытых клеток */
+}
+
+.cell.opened {
+    background-color: white; /* Цвет открытых клеток */
+}

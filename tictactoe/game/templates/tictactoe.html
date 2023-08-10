@@ -1,0 +1,19 @@
+    
+    
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/minesweeper.css' %}">
+<link rel="stylesheet" href="{% static 'css/tictactoe.css' %}">
+<div class="chat"></div>
+<div class="board-container">
+    <div class="board user-select-none text-dark" onclick="event.preventDefault()" id="board">
+        <!-- Здесь остается код создания доски с клетками -->
+    </div>
+</div>
+
+
+
+<script>
+    const link = "{{link}}"
+    const user_key = "{{user_key}}"
+    const gameState = {{game_state|safe}}
+</script>

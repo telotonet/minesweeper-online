@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    
+{% endblock content %}
+
+{% block game %}
+    {% include 'tictactoe.html' with link=game_obj.link %}
+    <div class="container mt-5" style="font-size: 20px;">
+        <h1>Игровая комната:</h1>
+        <div class="mb-3 row" >
+            <!-- ROOM IS OPEN -->
+            <label class="col-form-label">
+                Room Access: 
+                {% if game_obj.is_open %}
+                    <span class="badge bg-dark text-success">Открытый доступ</span>
+                {% else %} 
+                    <span class="badge bg-dark text-danger">Доступ по ссылке</span>
+                {%endif%}
+            </label>
+            
+            <!-- ROOM LINK -->
+            <label for="gameLink" class="col-form-label">
+                Room Link: 
+                <span id="gameLink" class="badge bg-dark">{{game_obj.link}}</span>
+                <button class="btn btn-outline-success btn-sm" style="padding: 5px;" id="copyButton" type="button" onclick="copyToClipboard()">Copy</button>
+            </label>
+
+            <!--  ROOM STATUS -->
+            <label class="col-form-label">
+                Room Status: 
+                    {% if game_obj.status == '1' %}
+                        <span id="gameStatus" class="badge bg-dark">
+                            {{game_obj.get_status_display}} 
+                            <div class="spinner-border" style="height:0.8em; width:0.8em; margin-left: 5px;" role="status">
+                                <span class="visually-hidden" >Loading...</span>
+                            </div>
+                        </span>
+                    {% elif  game_obj.status == '2' %}
+                        <span id="gameStatus" class="badge bg-dark text-success">
+                            {{game_obj.get_status_display}} 
+                        </span>
+                    {% elif game_obj.status == '3' %}
+                        <span id="gameStatus" class="badge bg-dark text-warning">
+                            {{game_obj.get_status_display}} 
+                        </span>
+                        </label>
+                        <label class="col-form-label">
+                            Room created:
+                            <span class="badge bg-dark"> {{game_obj.created_at|date:"d M Y H:i:s"}}</span>
+                        </label>
+                        <label class="col-form-label">
+                            Match ended:
+                            <span class="badge bg-dark"> {{game_obj.updated_at|date:"d M Y H:i:s"}}</span>
+                        </label>
+                    {% else %}
+                        <span id="gameStatus" class="badge bg-dark text-danger">
+                            Error 
+                        </span>
+                    {% endif %}
+
+            </label>
+
+            </div>
+        </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/websocket.js' %}"></script>
+    <script src="{% static 'js/minesweeper.js' %}"></script>    
+    <script src="{% static 'js/tictactoe.js' %}"></script>   
+    <script>
+        function copyToClipboard() {
+        const gameLink = document.getElementById('gameLink');
+        const range = document.createRange();
+        range.selectNode(gameLink);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+
+        const copyButton = document.getElementById('copyButton');
+        copyButton.textContent = 'Copied!';
+        copyButton.disabled = true;
+        setTimeout(function() {
+            copyButton.textContent = 'Copy';
+            copyButton.disabled = false;
+        }, 2000);
+    }
+    
+    
+    </script>
+{% endblock %}

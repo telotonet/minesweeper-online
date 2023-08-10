@@ -1,0 +1,135 @@
+/* .board {
+    display: grid;
+    grid-template-columns: repeat(32, 20px);
+    margin: 0 auto;
+    grid-gap: 1px;
+    max-width: 670px;
+} */
+
+
+
+/* Общие стили для клеточек */
+.cell {
+    font-weight: 900;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    transition: all 0.1s linear;
+    background-color: gray; /* Цвет неоткрытых клеток */
+}
+
+/* Стили для больших экранов */
+@media (min-width: 768px) {
+    .board {
+        display: grid;
+        grid-template-columns: repeat(32, 20px);
+        margin: 0 auto;
+        grid-gap: 1px;
+        max-width: 670px;
+    }
+
+    .cell {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Стили для мобильных экранов */
+@media (max-width: 767px) {
+    .board {
+        display: grid;
+        grid-template-columns: repeat(32, 10px);
+        margin: 0 auto;
+        grid-gap: 1px;
+        max-width: 335px;
+    }
+
+    .cell {
+        width: 10px;
+        height: 10px;
+        font-size: 7px;
+    }
+}
+
+.username {
+    margin-left: -15px;
+    margin-top: 7px;
+    color: black;
+    transition: all 0.1s linear;
+}
+
+.cursor {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.cursor::before, .cursor::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background-color: white; /* Цвет перекрестия */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.cursor::after {
+    height: 2px;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+  
+.cell.hidden {
+    background-color: gray; /* Тот же цвет для неоткрытых клеток */
+}
+.hovered {
+    background-color: rgba(98, 98, 98, 0.194);
+    opacity: 0.5;
+}
+.cell.hidden:hover,
+.mine-question:hover,
+.mine-marked:hover{
+    background-color: rgb(98, 98, 98); /* Тот же цвет для неоткрытых клеток */
+}
+
+.cell.opened {
+    background-color: white; /* Цвет открытых клеток */
+}
+
+.cell.opened:hover {
+    background-color: rgb(225, 225, 225); /* Цвет открытых клеток */
+} */
+.chat::-webkit-scrollbar {
+    width: 8px; /* Ширина скроллбара */
+}
+
+/* Стилизация ползунка скроллбара */
+.chat::-webkit-scrollbar-thumb {
+    background-color: #555; /* Цвет ползунка */
+    border-radius: 10px; /* Закругление углов */
+}
+
+/* Стилизация трека скроллбара */
+.chat::-webkit-scrollbar-track {
+    background-color: #333; /* Цвет трека */
+}
+
+/* Опционально: убрать полосу прокрутки в горизонтальном направлении */
+.chat::-webkit-scrollbar-horizontal {
+    display: none;
+}
+
+.chat {
+    max-height: 300px; 
+    overflow-y: auto; 
+    word-break: break-all; 
+    width: 200px;
+} 
