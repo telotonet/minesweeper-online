@@ -30,18 +30,28 @@
 
             {% block content %}
             <div class="text-center">
-                <h1 class="display-4 user-select-none">Добро пожаловать в крестики-нолики</h1>
+                <h1 class="display-4 user-select-none">Добро пожаловать в сапер онлайн</h1>
                 <p class="lead user-select-none">Нажмите кнопку ниже, чтобы начать игру.</p>
                 <form method="post" action="{% url 'create_game' %}">
                     {% csrf_token %}
                     <div class="mb-3 col-md-5 mx-auto">
                         <input type="text" class="form-control" id="link" name="link" placeholder="Введите название комнаты (необязательно)">
-                        <input class="form-check-input" name="isOpen" type="checkbox" value="isOpen" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                          Открыть комнату 
-                        </label>
+                        <div class="d-flex justify-content-between mt-2">
+                            <select class="form-select" style="width: 50%" name="isOpen">
+                                <option disabled class="bg-dark text-light">Доступ к комнате</option>
+                                <option selected value="1">Открыта для всех</option>
+                                <option value="0">Доступна по ссылке</option>
+                              </select>
+                            <select class="form-select" style="width: 45%" name="difficulty">
+                                <option selected disabled class="bg-dark text-light">Сложность</option>
+                                <option value="easy">Легкая (10х10)</option>
+                                <option selected value="medium">Средняя (16х16)</option>
+                                <option value="hard">Сложная (32х32)</option>
+                              </select>
+                        </div>
+                        
                     </div>
-                    <button type="submit" class="btn btn-primary">Создать</button>
+                    <button type="submit" class="btn btn-primary w-50">Создать</button>
                 </form>
             </div>
             {% endblock content %}

@@ -28,7 +28,13 @@ const colors = [
 const cursorsId = {};
 const userColors = {}; 
 const userCells = {};
-const socket = new WebSocket(`ws://${window.location.host}/ws/game/${link}/`);
+// Chat staff
+const chatInput = document.getElementById("chatInput");
+const sendMessageButton = document.getElementById("sendMessageButton");
+let socket;
+if (gameStatus !=3 ){
+    socket = new WebSocket(`ws://${window.location.host}/ws/game/${link}/`);
+}
 function disableContextMenu(event) {
     event.preventDefault();
 }
@@ -37,12 +43,10 @@ board.addEventListener('contextmenu', disableContextMenu);
 
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    if (data['start']){
-        // Сообщение для чата "Игра началась". Запуск игры
-        const chatMessage = $('<div class="text-success"></div>').text('Игра началась');
+    if (data.type == 'start'){
+        const chatMessage = $('<li class="list-group-item text-bg-success p-2"></li>').text('Игра началась');
         $('#gameStatus').addClass('text-success').text('В игре')
         chat.append(chatMessage);
-        // chat.scrollTop(chat[0].scrollHeight);
     }
     if (data.type === 'cursor') {
         const userId = data.user;
@@ -56,8 +60,8 @@ socket.onmessage = (event) => {
         const xRelativeToBoard = (data.x / 100) * board.offsetWidth + boardRect.x;
         const yRelativeToBoard = (data.y / 100) * board.offsetHeight + boardRect.y;
         // Процентное вычисление положения курсора в окне игры
-        const col = Math.floor((data.x / 100) * 32);
-        const row = Math.floor((data.y / 100) * 32);
+        const col = Math.floor((data.x / 100) * size);
+        const row = Math.floor((data.y / 100) * size);
         // Поиск клетки, на которую пользователь навёл курсор
         let cell = $('.cell[data-row="' + row + '"][data-col="' + col + '"]');
         // Убрать ховер с предыдущей клеточки, если такая имеется
@@ -87,12 +91,21 @@ socket.onmessage = (event) => {
     }
     if (data.type == 'open') {
         const openedCells = data.opened_cells;
+        const lives = data.lives
         for (const cellData of openedCells) {
             const col = cellData.y;
             const row = cellData.x;
             const cellValue = cellData.cell;
             openCell(col, row, cellValue);
         }
+        const minesCounter = document.getElementById('minesCounter');
+        if (minesCounter) {
+            minesCounter.textContent = `${lives} ❤️`;
+        }
+    }
+    if (data.type == 'chat_message'){
+        const chatMessage = $('<li class="list-group-item text-bg-secondary rounded mb-2 p-1"></li>').text(`${data.user}: ${data.message}`);
+        chat.append(chatMessage);
     }
 };
 
@@ -146,3 +159,28 @@ socket.onclose = (event) => {
 socket.onerror = (event) => {
     console.error('WebSocket error:', event);
 };
+
+chatInput.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    const message = chatInput.value.trim(); // Удаляем лишние пробелы
+    if (message !== "") {
+        const sanitizedMessage = escapeHtml(message); // Экранирование данных
+        socket.send(JSON.stringify({
+            type: 'message',
+            message: sanitizedMessage
+        }));
+        chatInput.value = ""; // Очищаем поле ввода
+    }
+}
+
+// Функция экранирования HTML
+function escapeHtml(text) {
+    const element = document.createElement("div");
+    element.innerText = text;
+    return element.innerHTML;
+}

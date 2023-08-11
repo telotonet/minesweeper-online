@@ -12,10 +12,11 @@ def generate_random_link(length=random.randint(3,10), game_link=True):
         return generate_random_link()
     return link
 
-def generate_minesweeper(rows=32, cols=32, mines=200):
+def generate_minesweeper(rows=32, cols=32):
     # M - mine
     # 0 - void cell without any mines around it
-    # 1-8 - qty of mines around of cell
+    # 1-8 - bomb number around cells
+    mines = int(rows*cols*0.2) # 20% mines 
     board = [['0' for _ in range(cols)] for _ in range(rows)]
     for _ in range(mines):
         row, col = random.randint(0, rows - 1), random.randint(0, cols - 1)
@@ -39,9 +40,9 @@ def generate_minesweeper(rows=32, cols=32, mines=200):
 
 def start_gamestate(rows=32, cols=32):
     # c - closed
-    # o - opened 
     # f - flag mark
     # q - question mark
+    # 0-8 - bomb number around cells
     # set full closed board at start
     game_state = [['c' for _ in range(cols)] for _ in range(rows)]
     return game_state

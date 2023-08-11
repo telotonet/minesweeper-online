@@ -1,13 +1,14 @@
-const boardSize = 32;
 const board = document.getElementById('board');
+board.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`
+board.style.gridTemplateRows = `repeat(${size}, ${cellSize}px)`;
 let cells = [];
 let firstClick = true;
 
 
 function createBoard(gameState) {
-    for (let i = 0; i < boardSize; i++) {
+    for (let i = 0; i < size; i++) {
         cells[i] = [];
-        for (let j = 0; j < boardSize; j++) {
+        for (let j = 0; j < size; j++) {
             const cell = document.createElement('div');
             cell.classList.add('cell');
             cell.dataset.row = i;
@@ -50,7 +51,6 @@ function handleCellContextmenu(event) {
 
 function handleCellClick(event) {
     if (!event.target.classList.contains('opened')){
-        console.log('hello')
         event.preventDefault();
         const col = parseInt(event.target.dataset.col)
         const row = parseInt(event.target.dataset.row)
@@ -89,7 +89,6 @@ function toggleMark(cell) {
 }   
 
 function openCell(col, row, cellValue) {
-    console.log(col, row)
     const cell = cells[row][col];
     cell.classList.remove('hidden'); // Убираем класс hidden
     cell.classList.add('opened'); // Добавляем класс opened
@@ -104,6 +103,13 @@ function openCell(col, row, cellValue) {
         cell.style.transition = 'all 0.5s linear';
         cell.style.backgroundColor = 'red';
         cell.innerHTML = '💣';
+        cell.style.transition = 'box-shadow 0.7s linear';
+        cell.style.boxShadow = `0 0 ${cellSize-0.2*cellSize}px ${cellSize-0.8*cellSize}px red`;
+        cell.style.zIndex = '99';
+        setTimeout(() => {
+            cell.style.boxShadow = 'none'; // Убираем тени
+            cell.style.zIndex = '0';
+        }, 700);
     } else if (cellValue === '0') {
         cell.innerHTML = '';
     } else {
@@ -111,55 +117,6 @@ function openCell(col, row, cellValue) {
         cell.innerHTML = cellValue;
     }
 }
-
-
-// function countAdjacentMines(row, col) {
-//     let count = 0;
-//     for (let i = Math.max(0, row - 1); i <= Math.min(row + 1, boardSize - 1); i++) {
-//         for (let j = Math.max(0, col - 1); j <= Math.min(col + 1, boardSize - 1); j++) {
-//             if (i === row && j === col) continue;
-//             if (cells[i][j].classList.contains('mine')) count++;
-//         }
-//     }
-//     return count;
-// }
-
-// function revealMines() {
-//     for (let i = 0; i < boardSize; i++) {
-//         for (let j = 0; j < boardSize; j++) {
-//             const cell = cells[i][j];
-//             if (cell.classList.contains('mine') && cell.classList.contains('hidden')) {
-//                 cell.innerHTML = '💣';
-//             }
-//         }
-//     }
-// }
-
-// function gameOver() {
-//     revealMines();
-//     alert('Game Over!');
-// }
-
-// function checkWin() {
-//     let allSafeCellsOpened = true;
-//     for (let i = 0; i < boardSize; i++) {
-//         for (let j = 0; j < boardSize; j++) {
-//             const cell = cells[i][j];
-//             const isMine = cell.classList.contains('mine');
-//             const isOpened = cell.classList.contains('opened');
-//             if (isMine && isOpened) {
-//                 gameOver();
-//                 return;
-//             }
-//             if (!isMine && !isOpened) {
-//                 allSafeCellsOpened = false;
-//             }
-//         }
-//     }
-//     if (allSafeCellsOpened) {
-//         alert('Congratulations! You won!');
-//     }
-// }
 
 // Завершение хода игры при клике на бомбу
 function handleMineClick(event) {
@@ -169,9 +126,6 @@ function handleMineClick(event) {
 
 function initGame() {
     createBoard(gameState);
-    document.querySelectorAll('.mine').forEach((mine) => {
-        mine.addEventListener('click', handleMineClick);
-    });
 }
 
 initGame();

@@ -1,0 +1,38 @@
+    
+    
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/minesweeper.css' %}">
+<div class="chat"></div>
+<div class="board-container ">
+    <div class="board user-select-none text-dark mx-auto" onclick="event.preventDefault()" id="board">
+        <!-- Здесь остается код создания доски с клетками -->
+    </div>
+</div>
+
+
+
+<script>
+    const link = "{{link}}"
+    const user_key = "{{user_key}}"
+    const gameState = {{game_obj.game_state|safe}}
+    const gameStatus = {{game_obj.status}}
+    let size;
+    switch ("{{game_obj.difficulty}}") {
+        case "easy":
+            size = 10;
+            cellSize = 40
+            break;
+        case "medium":
+            size = 16;
+            cellSize = 30
+            break;
+        case "hard":
+            size = 32;
+            cellSize = 20
+            break;
+        default:
+            cellSize = 20
+            size = 10; // По умолчанию
+    }
+    console.log("Размер:", size);
+</script>

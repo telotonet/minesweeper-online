@@ -7,16 +7,19 @@ STATUS_CHOICES = (
         ('2', 'В игре'),
         ('3', 'Игра окончена'),
     )
-
+DIFFICULTY_CHOICES = [
+        ('easy', 'Легкая'),
+        ('medium', 'Средняя'),
+        ('hard', 'Сложная'),
+    ]
 class GameRoom(models.Model):
-    # player1      = models.ForeignKey(User, related_name='player1', blank=True, null=True, on_delete=models.SET_NULL)
-    # player2      = models.ForeignKey(User, related_name='player2', blank=True, null=True, on_delete=models.SET_NULL)
     link         = models.CharField(max_length=25)
     is_open      = models.BooleanField(default=True)
     status       = models.CharField(max_length=1, choices=STATUS_CHOICES)
     created_at   = models.DateTimeField(auto_now_add=True)
     updated_at   = models.DateTimeField(auto_now=True, blank=True, null=True)
-    winner       = models.ForeignKey(User, related_name='won_room', blank=True, null=True, on_delete=models.SET_NULL)
+    difficulty   = models.CharField(max_length=6, choices=DIFFICULTY_CHOICES, default='easy')
+    lives        = models.PositiveIntegerField(default=1)
     board        = models.JSONField()
     game_state   = models.JSONField()
 
