@@ -117,16 +117,4 @@ function openCell(col, row, cellValue) {
         cell.innerHTML = cellValue;
     }
 }
-
-// Завершение хода игры при клике на бомбу
-function handleMineClick(event) {
-    event.preventDefault();
-    gameOver();
-}
-
-function initGame() {
-    createBoard(gameState);
-}
-
-initGame();
-
+createBoard(gameState)

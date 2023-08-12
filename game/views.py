@@ -4,8 +4,9 @@ from .models import GameRoom, GameMember
 from .utils import generate_random_link, member_num, generate_minesweeper, start_gamestate
 from django.contrib import messages
 from random import randint as ri
-from django.db import transaction
 from django.utils.text import slugify
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 # Create your views here.
 def main_page(request):
@@ -29,14 +30,17 @@ def create_game(request):
         elif difficulty == 'hard':
             lives = 3
             size = 32
+        board, cells_remain = generate_minesweeper(size, size)
+        game_state = start_gamestate(board)
         game = GameRoom.objects.create(
                 link=link,
                 is_open=is_open, 
                 status=1, 
-                board=generate_minesweeper(size, size), 
-                game_state=start_gamestate(size, size), 
+                board=board, 
+                game_state=game_state, 
                 difficulty=difficulty, 
-                lives=lives
+                lives=lives,
+                cells_remain = cells_remain,
             )
     return redirect(reverse('game_detail', args=[game.link, ]))
 
@@ -45,14 +49,26 @@ def game_detail(request, link):
     if request.user.is_anonymous and not request.session.get('user_key'):
         request.session['user_key'] = generate_random_link(game_link=False)
     user_key = request.user.username or request.session['user_key']
-    if game_obj.members.count() < member_num and game_obj.status == '1':
+    if game_obj.members.count() < member_num:
         game_member, created = GameMember.objects.get_or_create(game=game_obj, user=user_key)
-        game_room_members = game_obj.members.add(game_member)
-        if game_obj.members.count() == member_num:
-            game_obj.status = '2'
+        game_obj.members.add(game_member)
         game_obj.save()
             
     return render(request, 'game_room.html', {'game_obj': game_obj, 'user_key': user_key})
 
 
-
+def game_history(request):
+    user_key = request.user.username or request.session.get('user_key')
+    user_games = None
+    if user_key:
+        user_games = GameRoom.objects.filter(members__user=user_key).prefetch_related('members')
+    
+    paginator = Paginator(user_games, 20)
+    page = request.GET.get('page')
+    try:
+        games = paginator.page(page)
+    except PageNotAnInteger:
+        games = paginator.page(1)
+    except EmptyPage:
+        games = paginator.page(paginator.num_pages)
+    return render(request, 'history.html', {'games': games})

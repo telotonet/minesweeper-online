@@ -3,9 +3,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 # Create your models here.
 STATUS_CHOICES = (
-        ('1', 'Ожидание игрока'),
-        ('2', 'В игре'),
-        ('3', 'Игра окончена'),
+        ('1', 'В игре'),
+        ('2', 'Игра окончена'),
     )
 DIFFICULTY_CHOICES = [
         ('easy', 'Легкая'),
@@ -22,6 +21,7 @@ class GameRoom(models.Model):
     lives        = models.PositiveIntegerField(default=1)
     board        = models.JSONField()
     game_state   = models.JSONField()
+    cells_remain = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return self.link

@@ -1,4 +1,5 @@
 const chat = $('#chat')
+const chatMessages = document.querySelector('.chat-messages');
 // cursors of other players have random colors from this list
 // ordering of first eight colors is for bomb numbers on a cell
 const colors = [
@@ -32,7 +33,7 @@ const userCells = {};
 const chatInput = document.getElementById("chatInput");
 const sendMessageButton = document.getElementById("sendMessageButton");
 let socket;
-if (gameStatus !=3 ){
+if (gameStatus !=2 ){
     socket = new WebSocket(`ws://${window.location.host}/ws/game/${link}/`);
 }
 function disableContextMenu(event) {
@@ -43,10 +44,36 @@ board.addEventListener('contextmenu', disableContextMenu);
 
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    if (data.type == 'start'){
-        const chatMessage = $('<li class="list-group-item text-bg-success p-2"></li>').text('Игра началась');
-        $('#gameStatus').addClass('text-success').text('В игре')
-        chat.append(chatMessage);
+    if (data.type == 'game'){
+        $('.toast').remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+        toast.setAttribute('data-bs-autohide', 'true');
+        toast.innerHTML = `
+            <div class="toast-header bg-danger text-light">
+                <strong class="me-auto">Ошибка!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body text-dark">
+                ${data.message}
+            </div>
+        `;
+
+        // Добавляем тост в контейнер
+        const toastContainer = document.getElementById('toast-container');
+        toastContainer.appendChild(toast);
+
+        // Показываем тост
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        // Через 3 секунды удаляем тост
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
     if (data.type === 'cursor') {
         const userId = data.user;
@@ -104,8 +131,17 @@ socket.onmessage = (event) => {
         }
     }
     if (data.type == 'chat_message'){
-        const chatMessage = $('<li class="list-group-item text-bg-secondary rounded mb-2 p-1"></li>').text(`${data.user}: ${data.message}`);
+        const chatMessage = $('<li class="list-group-item bg-secondary rounded mb-2 p-1"></li>');
+        const usernameSpan = $('<span class="username"></span>').text(data.user + ": ").css('color', userColors[data.user]).css('margin-left', '10px')
+        const messageSpan = $('<span class="message text-dark"></span>').text(data.message)
+        
+        chatMessage.append(usernameSpan);
+        chatMessage.append(messageSpan);
+        
         chat.append(chatMessage);
+        
+        // Пролистываем чат вниз
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 };
 
@@ -153,12 +189,11 @@ function getRandomColor() {
 }
 
 socket.onclose = (event) => {
-    console.log('WebSocket connection closed:', event);
+    window.location.href = mainPage;
 };
 
-socket.onerror = (event) => {
-    console.error('WebSocket error:', event);
-};
+// socket.onerror = (event) => {
+// };
 
 chatInput.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {

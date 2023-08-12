@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #505961;
+    }
+
+    .card {
+        background-color: #343a40;
+        color: white;
+        box-shadow: 10px 10px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .card-header {
+        background-color: #212529;
+        border-bottom: none;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .mt-4 {
+        margin-top: 2rem;
+    }
+</style>
+<div class="container">
+    <h1>Страница: {{ games.number }}</h1>
+    <div class="row mt-4">
+        {% for el in games %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title fw-bold"><a href="{{el.get_absolute_url}}" class="d-block text-center text-decoration-none"><span class="icon">🔗</span> {{ el.link }}</a></h5>
+                </div>
+                <div class="card-body">
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <p class="card-text fs-2 text-center w-100 fw-bold"><span class="icon">❤️</span> {{ el.lives }}</p>
+                    </div>
+                    <p class="card-text
+                        {% if el.difficulty == 'hard' %}
+                            text-danger 
+                        {% elif el.difficulty == 'medium' %}
+                            text-warning
+                        {% else %}
+                            text-success
+                        {% endif %}
+                     text-center fs-5 fw-bold"><span class="icon">⚙️</span>{{ el.difficulty }}</p>
+
+                </div>
+                <div class="card-footer text-light text-right text-center">
+                    <p class="card-text fw-bold"><span class="icon">📅</span> {{ el.created_at|date:"d/m/y H:i:s" }}</p>
+                    <p class="card-text fw-bold"><span class="icon">🔄</span> {{ el.updated_at|date:"d/m/y H:i:s" }}</p>
+                </div>
+            </div>
+        </div>
+        
+        {% empty %}
+        <p class="col-md-12">Нет игр</p>
+        {% endfor %}
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12 d-flex justify-content-center">
+            <ul class="pagination">
+                {% if games.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ games.previous_page_number }}">{{ games.previous_page_number }}</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ games.number }}</span></li>
+                {% if games.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ games.next_page_number }}">{{ games.next_page_number }}</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ games.paginator.num_pages }}">&raquo;</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
