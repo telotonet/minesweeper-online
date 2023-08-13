@@ -45,6 +45,8 @@ board.addEventListener('contextmenu', disableContextMenu);
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
     if (data.type == 'game'){
+        gameStatusTemplate = document.getElementById('gameStatus')
+        gameStatusTemplate.textContent = "Игра окончена"
         $('.toast').remove();
         const toast = document.createElement('div');
         toast.className = 'toast';
@@ -61,11 +63,9 @@ socket.onmessage = (event) => {
                 ${data.message}
             </div>
         `;
-
         // Добавляем тост в контейнер
         const toastContainer = document.getElementById('toast-container');
         toastContainer.appendChild(toast);
-
         // Показываем тост
         const bsToast = new bootstrap.Toast(toast);
         bsToast.show();

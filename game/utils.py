@@ -42,7 +42,7 @@ def generate_minesweeper(rows=32, cols=32):
 
 
 
-def open_adjacent_cells(x, y, opened_cells, board, game_state):
+def open_adjacent_cells(x, y, opened_cells, board, game_state, cells_remain):
     if x < 0 or x >= len(game_state) or y < 0 or y >= len(game_state[0]):
         return
     if game_state[x][y] != 'c':
@@ -50,15 +50,15 @@ def open_adjacent_cells(x, y, opened_cells, board, game_state):
     
     game_state[x][y] = board[x][y]
     opened_cells.append({'x': x, 'y': y, 'cell': board[x][y]})
-    
+    cells_remain -= 1
     if board[x][y] == '0':
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
                 new_x = x + dx
                 new_y = y + dy
-                open_adjacent_cells(new_x, new_y, opened_cells, board, game_state)
+                open_adjacent_cells(new_x, new_y, opened_cells, board, game_state, cells_remain)
 
-def start_gamestate(board):
+def start_gamestate(board, cells_remain):
     rows = len(board)
     cols = len(board[0])
     
@@ -69,7 +69,7 @@ def start_gamestate(board):
     x, y = random_zero_cell
     
     opened_cells = []
-    open_adjacent_cells(x, y, opened_cells, board, game_state)
+    open_adjacent_cells(x, y, opened_cells, board, game_state, cells_remain)
     
-    return game_state
+    return game_state, cells_remain
 

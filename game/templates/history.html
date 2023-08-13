@@ -42,7 +42,7 @@
         <div class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title fw-bold"><a href="{{el.get_absolute_url}}" class="d-block text-center text-decoration-none"><span class="icon">🔗</span> {{ el.link }}</a></h5>
+                    <h5 class="card-title fw-bold"><a href="{{el.get_absolute_url}}" class="d-block text-center text-decoration-none"><span class="icon">🔗</span> {{ el.link|truncatechars:30 }}</a></h5>
                 </div>
                 <div class="card-body">
                     

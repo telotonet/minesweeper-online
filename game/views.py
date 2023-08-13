@@ -4,8 +4,8 @@ from .models import GameRoom, GameMember
 from .utils import generate_random_link, member_num, generate_minesweeper, start_gamestate
 from django.contrib import messages
 from random import randint as ri
-from django.utils.text import slugify
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from pytils.translit import slugify
 
 
 # Create your views here.
@@ -15,6 +15,7 @@ def main_page(request):
 def create_game(request):
     if request.method == 'POST':
         link = slugify(request.POST.get('link', None))
+        print(link)
         is_open = bool(int(request.POST.get('isOpen', False)))
         difficulty = request.POST.get('difficulty', 'easy')
         if not link:
@@ -31,7 +32,7 @@ def create_game(request):
             lives = 3
             size = 32
         board, cells_remain = generate_minesweeper(size, size)
-        game_state = start_gamestate(board)
+        game_state, cells_remain = start_gamestate(board, cells_remain)
         game = GameRoom.objects.create(
                 link=link,
                 is_open=is_open, 

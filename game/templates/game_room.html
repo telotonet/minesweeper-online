@@ -49,14 +49,14 @@
                         <label class="col-form-label">
                             Room Status: 
                             {% if game_obj.status == '1' %}
-                                <span id="gameStatus" class="badge">
+                                <span id="gameStatus" class="badge text-success">
                                     {{game_obj.get_status_display}} 
                                     <div class="spinner-border" style="height:0.8em; width:0.8em; margin-left: 5px;" role="status">
                                         <span class="visually-hidden" >Loading...</span>
                                     </div>
                                 </span>
                             {% elif  game_obj.status == '2' %}
-                                <span id="gameStatus" class="badge text-success">
+                                <span id="gameStatus" class="badge text-warning">
                                     {{game_obj.get_status_display}} 
                                 </span>
                             {% else %}

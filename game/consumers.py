@@ -22,9 +22,9 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.game_link = self.scope['url_route']['kwargs']['link']
         self.game_group_name = f'game_group_{self.game_link}'
-        session = self.scope['session']['user_key']
+        session = self.scope['session'].get('user_key')
         user = self.scope['user']
-        self.user_key = user.username or session
+        self.user_key = session or user.username  
 
         await self._setup_game()
 
@@ -44,7 +44,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message_type = text_data_json.get('type')
         cursor_time = time.time()
-        if message_type == 'cursor' and cursor_time - self.last_cursor_time >= 0.07 and self.user_key in self.player_list:
+        if message_type == 'cursor' and cursor_time - self.last_cursor_time >= 0.05 and self.user_key in self.player_list:
             x = text_data_json.get('x')
             y = text_data_json.get('y')
             user = text_data_json.get('user')
@@ -116,9 +116,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                             }
                         )
                         asyncio.create_task(self.close_connections())
-            if self.game_obj.board[x][y] != 'M':
-                self.game_obj.cells_remain -= 1
-                print(self.game_obj.cells_remain)
             opened_cells.append({'x': x, 'y': y, 'cell': self.game_obj.board[x][y]})
             
             self.game_obj.game_state[x][y] = self.game_obj.board[x][y]
@@ -222,8 +219,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         )
         if self.user_key in self.connected_users_dict:
             self.connected_users_dict.remove(self.user_key)
-            if not self.connected_users_dict and self.game_obj.status == '2':
-                self.game_obj.status = '3'  # Устанавливаем статус игры 'Игра окончена'
+            if not self.connected_users_dict and self.game_obj.status == '1':
+                self.game_obj.status = '2'  # Устанавливаем статус игры 'Игра окончена'
                 await self.save_game()
             else:
                 await self.channel_layer.group_send(
@@ -234,8 +231,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                         'user': self.user_key,
                     }
                 )
-
-
 
     async def _setup_game(self):
         self.game_obj = await sync_to_async(GameRoom.objects.get)(link=self.game_link)
@@ -279,7 +274,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         
         self.game_obj.game_state[x][y] = self.game_obj.board[x][y]
         opened_cells.append({'x': x, 'y': y, 'cell': self.game_obj.board[x][y]})
-        
         if self.game_obj.board[x][y] == '0':
             for dx in [-1, 0, 1]:
                 for dy in [-1, 0, 1]:
